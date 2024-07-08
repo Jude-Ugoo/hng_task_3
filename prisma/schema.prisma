@@ -1,0 +1,30 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  userId               String             @id @default(uuid())
+  firstName            String
+  lastName             String
+  email                String             @unique
+  password             String
+  phone                String?
+  organisations        Organisation[]     @relation("UserOrganisations")
+  createdOrganisations Organisation[]     @relation("OrganisationCreator")
+}
+
+model Organisation {
+  orgId       String  @id @default(uuid())
+  name        String
+  description String?
+  users       User[]  @relation("UserOrganisations")
+
+  // Field to track the creator of the organisation
+  creatorId        String
+  creator          User               @relation("OrganisationCreator", fields: [creatorId], references: [userId])
+}
